@@ -46,7 +46,6 @@ export default {
     if (result.data.Success) {
       this.form.model.ID = result.data.Data
     }
-    console.log(this.form.model.ID)
   },
   data () {
     return {

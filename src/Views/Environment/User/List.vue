@@ -10,7 +10,7 @@
             </el-breadcrumb>
           </td>
           <td class="text-r">
-            <el-button size="small" icon="el-icon-search" @click="dialog.query.visible = true">查询</el-button>
+            <el-button size="small" icon="el-icon-search" @click="openDialogQuery">查询</el-button>
             <el-button size="small" icon="el-icon-plus" @click="edit()">添加</el-button>
           </td>
         </tr>
@@ -27,7 +27,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary">确 定</el-button>
+          <el-button type="primary" @click="executeDialogQuery">确 定</el-button>
         </div>
       </el-dialog>
       <el-table :data="pagination.data" border stripe>
@@ -42,7 +42,8 @@
           <td>
             <el-pagination :layout="pagination.layout"
               :total="pagination.total" :current-page="pagination.index"
-              :page-size="pagination.size" :page-sizes="pagination.sizes">
+              :page-size="pagination.size" :page-sizes="pagination.sizes"
+              @current-change="paginationCurrentChange" @size-change="paginationSizeChange">
             </el-pagination>
           </td>
         </tr>
@@ -52,6 +53,8 @@
 </template>
 
 <script>
+import EnvironmentUserService from '@/Service/Environment/User'
+import axios from 'axios'
 export default {
   name: 'EnvironmentUserList',
   data() {
@@ -71,12 +74,49 @@ export default {
         sizes: [10, 20, 30, 40, 50],
         total: 40,
         layout: 'total, sizes, prev, pager, next, jumper',
-        query: {},
+        condition: {},
         data: []
       }
     };
   },
+  mounted () {
+    this.executeQuery()
+  },
   methods: {
+    openDialogQuery() {
+      this.dialog.query.visible = true
+      for(name in this.pagination.condition) {
+        this.dialog.query.form[name] = this.pagination.condition[name]
+      }
+    },
+    executeDialogQuery(){
+      this.dialog.query.visible = false
+      for(name in this.dialog.query.form) {
+        this.pagination.condition[name] = this.dialog.query.form[name]
+      }
+      this.executeQuery()
+    },
+    paginationCurrentChange(current){
+      this.pagination.index = current
+      this.executeQuery()
+    },
+    paginationSizeChange(size) {
+      this.pagination.size = size
+      this.executeQuery()
+    },
+    executeQuery () {
+      var data = {
+        size: this.pagination.size,
+        index: this.pagination.index,
+        condition: this.pagination.condition
+      }
+      EnvironmentUserService.Query(data).then((result) => {
+        this.pagination.data = result.data.Data
+        this.pagination.total = result.data.Total
+      }).catch((error) => {
+        this.$notify.error({ title: '',  message: error.response.data.Message })
+      })
+    },
     edit() {
       this.$router.push({ name: 'EnvironmentUserEdit' })
     }
