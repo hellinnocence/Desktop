@@ -1,0 +1,2 @@
+E:\workspace\visual studio\Jewel\Desktop\obj\Debug\Desktop.njsproj.CoreCompileInputs.cache
+E:\workspace\visual studio\Jewel\Desktop\bin\Microsoft.NodejsTools.WebRole.dll
