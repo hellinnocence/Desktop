@@ -37,10 +37,9 @@
 
 <<script>
 import AgentService from '@/Service/Agent'
-import EnvironmentUserService from '@/Service/Environment/User'
-import axios from 'axios'
+import UserService from '@/Service/User'
 export default {
-  name: 'EnvironmentUserEdit',
+  name: 'UserEdit',
   async created (){
     var result = await AgentService.GenerateID()
     if (result.data.Success) {
@@ -81,7 +80,7 @@ export default {
     save(){
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
-          EnvironmentUserService.Edit(this.form.model).then((result) => {
+          UserService.Edit(this.form.model).then((result) => {
             this.$notify.success({ title: '',  message: result.data.Message })
           }).catch((error) => {
             this.$notify.error({ title: '',  message: error.response.data.Message })

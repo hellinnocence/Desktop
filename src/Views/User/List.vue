@@ -5,7 +5,6 @@
         <tr>
           <td class="text-l">
             <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item>系统设置</el-breadcrumb-item>
               <el-breadcrumb-item>用户列表</el-breadcrumb-item>
             </el-breadcrumb>
           </td>
@@ -53,10 +52,10 @@
 </template>
 
 <script>
-import EnvironmentUserService from '@/Service/Environment/User'
+import UserService from '@/Service/User'
 import axios from 'axios'
 export default {
-  name: 'EnvironmentUserList',
+  name: 'UserList',
   data() {
     return {
       dialog: {
@@ -110,7 +109,7 @@ export default {
         index: this.pagination.index,
         condition: this.pagination.condition
       }
-      EnvironmentUserService.Query(data).then((result) => {
+      UserService.Page(data).then((result) => {
         this.pagination.data = result.data.Data
         this.pagination.total = result.data.Total
       }).catch((error) => {
@@ -118,7 +117,7 @@ export default {
       })
     },
     edit() {
-      this.$router.push({ name: 'EnvironmentUserEdit' })
+      this.$router.push({ name: 'UserEdit' })
     }
   }
 };
