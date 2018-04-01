@@ -8,6 +8,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     { path: '/', name: 'UserList', component: UserList },
-    { path: '/User/Edit', name: 'UserEdit', component: UserEdit }
+    { path: '/User/Edit', name: 'UserEdit', component: UserEdit },
+    { path: '/User/Edit/:id', name: 'UserEdit', component: UserEdit }
   ]
 })

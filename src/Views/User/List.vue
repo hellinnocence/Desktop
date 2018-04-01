@@ -11,9 +11,9 @@
           </td>
           <td class="text-r">
             <el-button size="small" icon="el-icon-search" @click="openDialogQuery">查询</el-button>
-            <el-button size="small" icon="el-icon-plus" @click="edit()">添加</el-button>
-            <el-button size="small" icon="el-icon-edit" @click="edit()">编辑</el-button>
-            <el-button size="small" icon="el-icon-delete" @click="edit()">删除</el-button>
+            <el-button size="small" icon="el-icon-plus" @click="edit('insert')">添加</el-button>
+            <el-button size="small" icon="el-icon-edit" @click="edit('update')">编辑</el-button>
+            <el-button size="small" icon="el-icon-delete" @click="remove()">删除</el-button>
           </td>
         </tr>
       </table>
@@ -32,7 +32,8 @@
           <el-button type="primary" @click="executeDialogQuery">确 定</el-button>
         </div>
       </el-dialog>
-      <el-table :data="pagination.data" border stripe @sort-change="sortChange">
+      <el-table :data="pagination.data" border stripe highlight-current-row @current-change="highlightCurrentRowChange" @sort-change="sortChange">
+        <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="Account" label="帐号" sortable="custom" width="280" />
         <el-table-column prop="Name" label="用户名" />
       </el-table>
@@ -77,7 +78,8 @@ export default {
         layout: 'total, sizes, prev, pager, next, jumper',
         condition: {},
         sort: { field: 'ID', order: 'descending' },
-        data: []
+        data: [],
+        highlightCurrentRow: null
       }
     };
   },
@@ -112,6 +114,7 @@ export default {
       this.executeQuery()
     },
     executeQuery () {
+      this.pagination.highlightCurrentRow = null
       var data = {
         size: this.pagination.size,
         index: this.pagination.index,
@@ -125,8 +128,33 @@ export default {
         this.$notify.error({ title: '',  message: error.response.data.Message })
       })
     },
-    edit() {
-      this.$router.push({ name: 'UserEdit' })
+    highlightCurrentRowChange (val) {
+      this.pagination.highlightCurrentRow = val
+    },
+    edit(type) {
+      if (type == 'insert') {
+        this.$router.push({ name: 'UserEdit' })
+      } else if (type == 'update') {
+        if (this.pagination.highlightCurrentRow) {
+          var params = { id: this.pagination.highlightCurrentRow.ID }
+          this.$router.push({ name: 'UserEdit', params: params })
+        } else {
+          this.$notify.warning({ title: '',  message: '请选择要编辑的行' })
+        }
+      }
+    },
+    async remove() {
+      if (this.pagination.highlightCurrentRow) {
+          try {
+            await UserService.Remove(this.pagination.highlightCurrentRow.ID)
+            this.$notify.success({ title: '',  message: '删除成功' })
+            this.executeQuery()
+          } catch(e) {
+            this.$notify.error({ title: '',  message: '删除失败' })  
+          }
+        } else {
+          this.$notify.warning({ title: '',  message: '请选择要删除的行' })
+        }
     }
   }
 };

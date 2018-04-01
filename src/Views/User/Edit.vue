@@ -6,7 +6,7 @@
           <td class="text-l">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-              <el-breadcrumb-item>用户编辑</el-breadcrumb-item>
+              <el-breadcrumb-item>编辑用户</el-breadcrumb-item>
             </el-breadcrumb>
           </td>
           <td class="text-r">
@@ -36,21 +36,24 @@
 </template>
 
 <<script>
-import AgentService from '@/Service/Agent'
+import ToolService from '@/Service/Tool'
 import UserService from '@/Service/User'
 export default {
   name: 'UserEdit',
   async created (){
-    var result = await AgentService.GenerateID()
-    if (result.data.Success) {
-      this.form.model.ID = result.data.Data
+    if (this.$route.params.id) {
+      var result = await UserService.GetEdit(this.$route.params.id)
+      this.form.model = result.data
+    } else {
+      var result = await ToolService.GenerateID()
+      this.form.model.ID = result.data
     }
   },
   data () {
     return {
       form: {
         model:{
-          ID: '111',
+          ID: '',
           Account: '',
           Password: '',
           Name: '',
@@ -75,17 +78,16 @@ export default {
   },
   methods: {
     goBack(){
-      this.$router.push({ name: 'EnvironmentUserList' })
+      this.$router.push({ name: 'UserList' })
     },
     save(){
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
-          UserService.Edit(this.form.model).then((result) => {
-            this.$notify.success({ title: '',  message: result.data.Message })
+          UserService.PostEdit(this.form.model).then((result) => {
+            this.$notify.success({ title: '', message:  '保存成功' })
           }).catch((error) => {
-            this.$notify.error({ title: '',  message: error.response.data.Message })
+            this.$notify.error({ title: '',  message: '保存失败' })
           })
-          //this.$notify({ title: '',  message: result.data.Message, type: result.data.Success ? 'success' : 'error' });
         } else {
           return false
         }

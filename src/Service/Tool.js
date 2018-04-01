@@ -2,6 +2,6 @@ import axios from 'axios'
 
 export default {
   GenerateID() {
-    return axios.post('/Agent/GenerateID')
+    return axios.post('/Tool/GenerateID')
   }
 }
