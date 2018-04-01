@@ -5,7 +5,7 @@
         <tr>
           <td class="text-l">
             <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item>系统设置</el-breadcrumb-item>
+              <el-breadcrumb-item>用户管理</el-breadcrumb-item>
               <el-breadcrumb-item>用户编辑</el-breadcrumb-item>
             </el-breadcrumb>
           </td>

@@ -8,7 +8,7 @@ import App from './App'
 import router from './router'
 import './Assets/style.css'
 
-axios.defaults.baseURL = 'http://localhost:50876'
+axios.defaults.baseURL = 'http://localhost:2397'
 
 Vue.prototype.$http = axios
 Vue.config.productionTip = false

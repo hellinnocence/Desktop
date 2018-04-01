@@ -22,7 +22,7 @@
     <el-container>
       <el-aside width="200px" style="height: 100%;">
         <el-menu style="height: 100%;" :router="true">
-          <el-menu-item index="/">用户列表</el-menu-item>
+          <el-menu-item index="/">用户管理</el-menu-item>
         </el-menu>
       </el-aside>
       <el-main style="padding: 0px;">

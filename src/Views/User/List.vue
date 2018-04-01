@@ -5,12 +5,15 @@
         <tr>
           <td class="text-l">
             <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>用户管理</el-breadcrumb-item>
               <el-breadcrumb-item>用户列表</el-breadcrumb-item>
             </el-breadcrumb>
           </td>
           <td class="text-r">
             <el-button size="small" icon="el-icon-search" @click="openDialogQuery">查询</el-button>
             <el-button size="small" icon="el-icon-plus" @click="edit()">添加</el-button>
+            <el-button size="small" icon="el-icon-edit" @click="edit()">编辑</el-button>
+            <el-button size="small" icon="el-icon-delete" @click="edit()">删除</el-button>
           </td>
         </tr>
       </table>
@@ -29,10 +32,9 @@
           <el-button type="primary" @click="executeDialogQuery">确 定</el-button>
         </div>
       </el-dialog>
-      <el-table :data="pagination.data" border stripe>
-        <el-table-column prop="Account" label="帐号" width="180" />
-        <el-table-column prop="Name" label="用户名" width="180" />
-        <el-table-column prop="Address" label="地址" />
+      <el-table :data="pagination.data" border stripe @sort-change="sortChange">
+        <el-table-column prop="Account" label="帐号" sortable="custom" width="280" />
+        <el-table-column prop="Name" label="用户名" />
       </el-table>
     </el-main>
     <el-footer height="50px">
@@ -74,6 +76,7 @@ export default {
         total: 40,
         layout: 'total, sizes, prev, pager, next, jumper',
         condition: {},
+        sort: { field: 'ID', order: 'descending' },
         data: []
       }
     };
@@ -103,11 +106,17 @@ export default {
       this.pagination.size = size
       this.executeQuery()
     },
+    sortChange(arg) {
+      this.pagination.sort.field = arg.prop ? arg.prop : 'ID'
+      this.pagination.sort.order = arg.order ? arg.order : 'descending'
+      this.executeQuery()
+    },
     executeQuery () {
       var data = {
         size: this.pagination.size,
         index: this.pagination.index,
-        condition: this.pagination.condition
+        condition: this.pagination.condition,
+        sort: this.pagination.sort
       }
       UserService.Page(data).then((result) => {
         this.pagination.data = result.data.Data
