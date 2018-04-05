@@ -56,7 +56,6 @@
 
 <script>
 import UserService from '@/Service/User'
-import axios from 'axios'
 export default {
   name: 'UserList',
   data() {
@@ -124,8 +123,6 @@ export default {
       UserService.Page(data).then((result) => {
         this.pagination.data = result.data.Data
         this.pagination.total = result.data.Total
-      }).catch((error) => {
-        this.$notify.error({ title: '',  message: error.response.data.Message })
       })
     },
     highlightCurrentRowChange (val) {
@@ -145,13 +142,9 @@ export default {
     },
     async remove() {
       if (this.pagination.highlightCurrentRow) {
-          try {
-            await UserService.Remove(this.pagination.highlightCurrentRow.ID)
-            this.$notify.success({ title: '',  message: '删除成功' })
-            this.executeQuery()
-          } catch(e) {
-            this.$notify.error({ title: '',  message: '删除失败' })  
-          }
+          await UserService.Remove(this.pagination.highlightCurrentRow.ID)
+          this.$notify.success({ title: '',  message: '删除成功' })
+          this.executeQuery()
         } else {
           this.$notify.warning({ title: '',  message: '请选择要删除的行' })
         }
@@ -160,7 +153,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
 </style>

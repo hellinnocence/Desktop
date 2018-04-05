@@ -85,13 +85,11 @@ export default {
         if (valid) {
           UserService.PostEdit(this.form.model).then((result) => {
             this.$notify.success({ title: '', message:  '保存成功' })
-          }).catch((error) => {
-            this.$notify.error({ title: '',  message: '保存失败' })
           })
         } else {
           return false
         }
-      });
+      })
     }
   }
 }

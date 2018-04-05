@@ -14,5 +14,8 @@ export default {
   },
   Page(data){
     return axios.post('/User/Page', data)
+  },
+  Login(data){
+    return axios.post('/User/Login', data)
   }
 }
