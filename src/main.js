@@ -10,7 +10,7 @@ import './Assets/style.css'
 
 axios.defaults.baseURL = 'http://localhost:2396'
 axios.interceptors.request.use(function(config){
-  config.headers.Authorization = window.localStorage.getItem('AuthorizationToken')
+  config.headers.Authorization = 'Bearer ' + window.localStorage.getItem('AuthorizationToken')
   return config
 }, function(error){
   return Promise.reject(error);
@@ -30,6 +30,8 @@ axios.interceptors.response.use(function (response) {
     } else if (error.response.status == 401) {
       ElementUI.Notification.error('未授权，请登录')
       router.push({ name: 'Login' })
+    } else if (error.response.status == 500) {
+      ElementUI.Notification.error('系统错误请与管理员联系')
     }
   }
   return Promise.reject(error)

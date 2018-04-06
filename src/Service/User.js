@@ -17,5 +17,13 @@ export default {
   },
   Login(data){
     return axios.post('/User/Login', data)
+  },
+  GetChooseRoles(id){
+    return axios.get('/User/ChooseRoles', {
+      params: {id: id}
+    })
+  },
+  PostChooseRoles(id, roles) {
+    return axios.post('/User/ChooseRoles', { ID: id, Roles: roles })
   }
 }

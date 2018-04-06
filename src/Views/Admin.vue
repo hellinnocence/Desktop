@@ -23,8 +23,8 @@
       <el-aside width="200px" style="height: 100%;">
         <el-menu style="height: 100%;" :router="true">
           <el-menu-item index="/User/List">用户管理</el-menu-item>
-          <el-menu-item index="/">角色管理</el-menu-item>
-          <el-menu-item index="/">权限管理</el-menu-item>
+          <el-menu-item index="/Role/List">角色管理</el-menu-item>
+          <el-menu-item index="/Permit/List">权限管理</el-menu-item>
         </el-menu>
       </el-aside>
       <el-main style="padding: 0px;">

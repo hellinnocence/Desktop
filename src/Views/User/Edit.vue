@@ -1,4 +1,4 @@
-<<template>
+<template>
   <el-container class="list">
     <el-header height="45px">
       <table>
@@ -28,26 +28,34 @@
           <el-input v-model="form.model.Name"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="Remark">
-          <el-input v-model="form.model.Remark" type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input v-model="form.model.Remark" type="textarea" :autosize="{ minRows: 3, maxRows: 5 }"></el-input>
         </el-form-item>
       </el-form>
+       <el-transfer v-model="roles.selected" :data="roles.data" :props="roles.props" :titles="roles.titles" class="choose-roles"></el-transfer>
     </el-main>
   </el-container>
 </template>
 
-<<script>
+<script>
 import ToolService from '@/Service/Tool'
 import UserService from '@/Service/User'
+import RoleService from '@/Service/Role'
 export default {
   name: 'UserEdit',
   async created (){
     if (this.$route.params.id) {
       var result = await UserService.GetEdit(this.$route.params.id)
       this.form.model = result.data
+      result = await UserService.GetChooseRoles(this.$route.params.id)
+      result.data.forEach(item => {
+        this.roles.selected.push(item.Value)
+      });
     } else {
       var result = await ToolService.GenerateID()
       this.form.model.ID = result.data
     }
+    var result = await RoleService.Options()
+    this.roles.data = result.data
   },
   data () {
     return {
@@ -73,6 +81,12 @@ export default {
           ],
           Remark: []
         }
+      },
+      roles:{
+        data: [],
+        selected: [],
+        props: { key: 'Value', label: 'Text' },
+        titles: ['未选择', '已选择']
       }
     }
   },
@@ -84,7 +98,10 @@ export default {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
           UserService.PostEdit(this.form.model).then((result) => {
-            this.$notify.success({ title: '', message:  '保存成功' })
+            this.$notify.success({ title: '', message:  '保存用户基本信息成功' })
+          })
+          UserService.PostChooseRoles(this.form.model.ID, this.roles.selected).then((result) => {
+            this.$notify.success({ title: '', message:  '保存角色成功' })
           })
         } else {
           return false
@@ -94,3 +111,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  .choose-roles { width: 100%; display: flex; height: 400px; }
+  .choose-roles > .el-transfer-panel { flex: 1; }
+  .choose-roles > .el-transfer__buttons { display: flex; flex-direction: column; justify-content: center; }
+</style>
+
