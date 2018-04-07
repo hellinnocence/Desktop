@@ -23,7 +23,18 @@ export default {
       params: {id: id}
     })
   },
+  Options(){
+    return axios.get('/User/Options')
+  },
   PostChooseRoles(id, roles) {
     return axios.post('/User/ChooseRoles', { ID: id, Roles: roles })
+  },
+  GetChoosePermits(id){
+    return axios.get('/User/ChoosePermits', {
+      params: {id: id}
+    })
+  },
+  PostChoosePermits(id, permits) {
+    return axios.post('/User/ChoosePermits', { ID: id, Permits: permits })
   }
 }

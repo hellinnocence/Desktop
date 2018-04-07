@@ -17,21 +17,30 @@
       </table>
     </el-header>
     <el-main>  
-      <el-form ref="form" :model="form.model" :rules="form.rules" status-icon label-width="80px">
-        <el-form-item label="帐号" prop="Account">
-          <el-input v-model="form.model.Account"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="Password">
-          <el-input v-model="form.model.Password" type="password"></el-input>
-        </el-form-item>
-        <el-form-item label="用户名" prop="Name">
-          <el-input v-model="form.model.Name"></el-input>
-        </el-form-item>
-        <el-form-item label="备注" prop="Remark">
-          <el-input v-model="form.model.Remark" type="textarea" :autosize="{ minRows: 3, maxRows: 5 }"></el-input>
-        </el-form-item>
-      </el-form>
-       <el-transfer v-model="roles.selected" :data="roles.data" :props="roles.props" :titles="roles.titles" class="choose-roles"></el-transfer>
+      <el-tabs v-model="tabActive">
+        <el-tab-pane label="用户信息" name="user">    
+          <el-form ref="form" :model="form.model" :rules="form.rules" status-icon label-width="80px">
+            <el-form-item label="帐号" prop="Account">
+              <el-input v-model="form.model.Account"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="Password">
+              <el-input v-model="form.model.Password" type="password"></el-input>
+            </el-form-item>
+            <el-form-item label="用户名" prop="Name">
+              <el-input v-model="form.model.Name"></el-input>
+            </el-form-item>
+            <el-form-item label="备注" prop="Remark">
+              <el-input v-model="form.model.Remark" type="textarea" :autosize="{ minRows: 3, maxRows: 5 }"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="角色分配" name="role">
+          <el-transfer v-model="roles.selected" :data="roles.data" :props="roles.props" :titles="roles.titles" class="choose-roles"></el-transfer>
+        </el-tab-pane>
+        <el-tab-pane label="权限分配" name="permit">
+          <el-transfer v-model="permits.selected" :data="permits.data" :props="permits.props" :titles="permits.titles" class="choose-permits"></el-transfer>
+        </el-tab-pane>
+      </el-tabs>
     </el-main>
   </el-container>
 </template>
@@ -40,25 +49,29 @@
 import ToolService from '@/Service/Tool'
 import UserService from '@/Service/User'
 import RoleService from '@/Service/Role'
+import PermitService from '@/Service/Permit'
 export default {
   name: 'UserEdit',
   async created (){
-    if (this.$route.params.id) {
-      var result = await UserService.GetEdit(this.$route.params.id)
-      this.form.model = result.data
-      result = await UserService.GetChooseRoles(this.$route.params.id)
-      result.data.forEach(item => {
-        this.roles.selected.push(item.Value)
-      });
-    } else {
-      var result = await ToolService.GenerateID()
-      this.form.model.ID = result.data
-    }
     var result = await RoleService.Options()
     this.roles.data = result.data
+    result = await PermitService.Options()
+    this.permits.data = result.data
+    if (this.$route.params.id) {
+      result = await UserService.GetEdit(this.$route.params.id)
+      this.form.model = result.data
+      result = await UserService.GetChooseRoles(this.$route.params.id)
+      result.data.forEach(item => { this.roles.selected.push(item) })
+      result = await UserService.GetChoosePermits(this.$route.params.id)
+      result.data.forEach(item => { this.permits.selected.push(item) })
+    } else {
+      result = await ToolService.GenerateID()
+      this.form.model.ID = result.data
+    }
   },
   data () {
     return {
+      tabActive: 'user',
       form: {
         model:{
           ID: '',
@@ -87,6 +100,12 @@ export default {
         selected: [],
         props: { key: 'Value', label: 'Text' },
         titles: ['未选择', '已选择']
+      },
+      permits:{
+        data: [],
+        selected: [],
+        props: { key: 'Value', label: 'Text' },
+        titles: ['未选择', '已选择']
       }
     }
   },
@@ -97,12 +116,12 @@ export default {
     save(){
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
-          UserService.PostEdit(this.form.model).then((result) => {
-            this.$notify.success({ title: '', message:  '保存用户基本信息成功' })
-          })
-          UserService.PostChooseRoles(this.form.model.ID, this.roles.selected).then((result) => {
-            this.$notify.success({ title: '', message:  '保存角色成功' })
-          })
+          await UserService.PostEdit(this.form.model)
+          this.$notify.success({ title: '', message:  '保存用户基本信息成功' })
+          await UserService.PostChooseRoles(this.form.model.ID, this.roles.selected)
+          this.$notify.success({ title: '', message:  '保存角色成功' })
+          await UserService.PostChoosePermits(this.form.model.ID, this.permits.selected)
+          this.$notify.success({ title: '', message:  '保存权限成功' })
         } else {
           return false
         }
@@ -113,8 +132,14 @@ export default {
 </script>
 
 <style>
-  .choose-roles { width: 100%; display: flex; height: 400px; }
+  .el-tabs { height: 100%; display: flex; flex-direction: column; }
+  .el-tabs > .el-tabs__content { flex: 1; }
+  .el-tabs > .el-tabs__content > .el-tab-pane { height: 100%; }
+  .choose-roles { width: 100%; display: flex; height: 100%; }
   .choose-roles > .el-transfer-panel { flex: 1; }
   .choose-roles > .el-transfer__buttons { display: flex; flex-direction: column; justify-content: center; }
+  .choose-permits { width: 100%; display: flex; height: 100%; }
+  .choose-permits > .el-transfer-panel { flex: 1; }
+  .choose-permits > .el-transfer__buttons { display: flex; flex-direction: column; justify-content: center; }
 </style>
 

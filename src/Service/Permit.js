@@ -14,5 +14,24 @@ export default {
   },
   Page(data){
     return axios.post('/Permit/Page', data)
+  },
+  Options(){
+    return axios.get('/Permit/Options')
+  },
+  GetChooseUsers(id){
+    return axios.get('/Permit/ChooseUsers', {
+      params: {id: id}
+    })
+  },
+  PostChooseUsers(id, users) {
+    return axios.post('/Permit/ChooseUsers', { ID: id, Users: users })
+  },
+  GetChooseRoles(id){
+    return axios.get('/Permit/ChooseRoles', {
+      params: {id: id}
+    })
+  },
+  PostChooseRoles(id, roles) {
+    return axios.post('/Permit/ChooseRoles', { ID: id, Roles: roles })
   }
 }
